@@ -1,0 +1,1131 @@
+<!DOCTYPE html>
+<html lang="id" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LUMINA KAFE - Artisan Coffee & Culinary Comfort</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Alpine.js for Interactive Logic -->
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    
+    <!-- Google Fonts: Plus Jakarta Sans & Playfair Display -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        lumina: {
+                            bg: '#121214',
+                            card: '#1c1c20',
+                            cardHover: '#25252b',
+                            border: '#2e2e36',
+                            amber: '#f59e0b',
+                            gold: '#fbbf24',
+                            glow: '#d97706',
+                            cream: '#fef3c7',
+                            muted: '#a1a1aa'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+                        serif: ['"Playfair Display"', 'serif'],
+                    },
+                    boxShadow: {
+                        'glow-amber': '0 0 25px -5px rgba(245, 158, 11, 0.25)',
+                        'glow-lg': '0 0 40px -10px rgba(245, 158, 11, 0.35)',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            background-color: #121214;
+            color: #f4f4f5;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            overflow-x: hidden;
+        }
+        
+        /* Custom Ambient Lighting Effects */
+        .ambient-glow {
+            background: radial-gradient(circle at 50% -20%, rgba(245, 158, 11, 0.18), transparent 70%);
+        }
+        
+        .card-glow:hover {
+            box-shadow: 0 10px 30px -10px rgba(245, 158, 11, 0.2);
+            border-color: rgba(245, 158, 11, 0.4);
+        }
+
+        /* Hide scrollbar for Chrome, Safari and Opera */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        /* Hide scrollbar for IE, Edge and Firefox */
+        .no-scrollbar {
+            -ms-overflow-style: none;  /* IE and Edge */
+            scrollbar-width: none;  /* Firefox */
+        }
+
+        .glass-panel {
+            background: rgba(28, 28, 32, 0.75);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+    </style>
+</head>
+<body x-data="luminaApp()" x-init="initApp()" class="min-h-screen flex flex-col antialiased selection:bg-lumina-amber selection:text-black">
+
+    <!-- NAVIGATION BAR -->
+    <nav class="sticky top-0 z-40 glass-panel border-b border-lumina-border/60 transition-all duration-300">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-20">
+                
+                <!-- Logo & Brand -->
+                <a href="#" class="flex items-center gap-3 group">
+                    <div class="w-10 h-10 rounded-full bg-gradient-to-tr from-lumina-glow to-lumina-gold flex items-center justify-center text-black font-bold shadow-glow-amber transition-transform group-hover:scale-105">
+                        <i data-lucide="coffee" class="w-5 h-5 text-zinc-950"></i>
+                    </div>
+                    <div>
+                        <span class="font-serif text-xl sm:text-2xl font-bold tracking-wider text-white block leading-none">LUMINA</span>
+                        <span class="text-[10px] tracking-[0.2em] text-lumina-amber font-semibold uppercase">Kafe & Resto</span>
+                    </div>
+                </a>
+
+                <!-- Desktop Nav Links -->
+                <div class="hidden md:flex items-center space-x-8 text-sm font-medium text-zinc-300">
+                    <a href="#hero" class="hover:text-lumina-amber transition-colors">Beranda</a>
+                    <a href="#pairing" class="hover:text-lumina-amber transition-colors flex items-center gap-1.5">
+                        <i data-lucide="sparkles" class="w-4 h-4 text-lumina-gold"></i>
+                        Mood & Pairing
+                    </a>
+                    <a href="#menu" class="hover:text-lumina-amber transition-colors">Daftar Menu</a>
+                    <a href="#about" class="hover:text-lumina-amber transition-colors">Informasi</a>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="flex items-center gap-3">
+                    <!-- Table Reservation Button -->
+                    <button @click="openReservationModal = true" 
+                            class="hidden sm:flex items-center gap-2 px-4 py-2.5 rounded-full border border-lumina-amber/40 bg-lumina-amber/10 hover:bg-lumina-amber/20 text-lumina-cream text-xs font-semibold tracking-wide transition-all">
+                        <i data-lucide="calendar" class="w-4 h-4 text-lumina-amber"></i>
+                        <span>Reservasi Meja</span>
+                    </button>
+
+                    <!-- Cart Toggle Button -->
+                    <button @click="cartOpen = true" 
+                            class="relative p-2.5 sm:px-4 sm:py-2.5 rounded-full bg-lumina-amber hover:bg-lumina-gold text-zinc-950 font-bold text-xs flex items-center gap-2 transition-all transform active:scale-95 shadow-glow-amber">
+                        <i data-lucide="shopping-bag" class="w-4 h-4"></i>
+                        <span class="hidden sm:inline">Pesanan</span>
+                        <span x-show="cartTotalItems > 0" 
+                              x-text="cartTotalItems" 
+                              class="w-5 h-5 rounded-full bg-zinc-950 text-lumina-gold text-[11px] font-extrabold flex items-center justify-center">
+                        </span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- HERO SECTION -->
+    <section id="hero" class="relative pt-12 pb-20 md:pt-20 md:pb-32 overflow-hidden ambient-glow">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+                
+                <!-- Hero Text -->
+                <div class="lg:col-span-7 space-y-6 text-center lg:text-left">
+                    
+                    <!-- Open/Closed Live Status Badge -->
+                    <div class="inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full bg-zinc-900/80 border border-zinc-800 backdrop-blur-md">
+                        <span class="relative flex h-2.5 w-2.5">
+                          <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                          <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
+                        </span>
+                        <span class="text-xs font-medium text-zinc-300">Buka Hari Ini: <span class="text-white font-semibold">10:00 - 22:00 WIB</span></span>
+                    </div>
+
+                    <h1 class="font-serif text-4xl sm:text-6xl lg:text-7xl font-bold tracking-tight text-white leading-[1.15]">
+                        Artisan Coffee & <br class="hidden sm:inline"/>
+                        <span class="text-transparent bg-clip-text bg-gradient-to-r from-lumina-gold via-amber-400 to-amber-600">Culinary Comfort</span>
+                    </h1>
+
+                    <p class="text-zinc-400 text-base sm:text-lg max-w-2xl mx-auto lg:mx-0 leading-relaxed font-light">
+                        Selamat datang di <strong class="text-white font-medium">Lumina Kafe</strong>. Menghadirkan kehangatan kopi pilihan bercita rasa tinggi dan hidangan kuliner yang diracik segar dari bahan lokal berkualitas.
+                    </p>
+
+                    <!-- Kitchen Note Highlight -->
+                    <div class="p-4 rounded-xl bg-lumina-card/90 border border-lumina-border flex items-start gap-3.5 text-left max-w-xl mx-auto lg:mx-0">
+                        <i data-lucide="sparkles" class="w-5 h-5 text-lumina-amber shrink-0 mt-0.5"></i>
+                        <div class="text-xs text-zinc-300 leading-relaxed">
+                            <strong class="text-lumina-gold block font-semibold mb-0.5">Catatan Dapur & Spesial Hari Ini:</strong>
+                            Semua hidangan dimasak segar saat dipesan dengan bahan lokal pilihan. Harap beri tahu staf kami jika Anda memiliki alergi terhadap bahan makanan tertentu.
+                        </div>
+                    </div>
+
+                    <!-- Call to Actions -->
+                    <div class="flex flex-wrap items-center justify-center lg:justify-start gap-4 pt-2">
+                        <a href="#menu" class="px-7 py-3.5 rounded-full bg-lumina-amber hover:bg-lumina-gold text-zinc-950 font-bold text-sm transition-all shadow-glow-amber flex items-center gap-2">
+                            <span>Jelajahi Menu</span>
+                            <i data-lucide="arrow-down" class="w-4 h-4"></i>
+                        </a>
+                        <button @click="openReservationModal = true" class="px-7 py-3.5 rounded-full bg-zinc-900 border border-zinc-700 hover:border-lumina-amber/50 text-white font-semibold text-sm transition-all flex items-center gap-2">
+                            <i data-lucide="utensils" class="w-4 h-4 text-lumina-amber"></i>
+                            <span>Reservasi Tempat</span>
+                        </button>
+                    </div>
+
+                </div>
+
+                <!-- Hero Visual / Feature Card Showcase -->
+                <div class="lg:col-span-5 relative">
+                    <div class="relative mx-auto max-w-md lg:max-w-none">
+                        <!-- Decorative Glow Effect Background -->
+                        <div class="absolute -inset-1 rounded-3xl bg-gradient-to-r from-lumina-amber to-amber-700 opacity-30 blur-2xl"></div>
+                        
+                        <!-- Hero Main Card -->
+                        <div class="relative rounded-3xl bg-lumina-card border border-lumina-border p-6 shadow-2xl space-y-5">
+                            <div class="relative h-64 sm:h-72 rounded-2xl overflow-hidden group">
+                                <img src="https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?auto=format&fit=crop&w=800&q=80" 
+                                     alt="Lumina Kafe Atmosphere" 
+                                     class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700">
+                                <div class="absolute inset-0 bg-gradient-to-t from-zinc-950 via-zinc-950/20 to-transparent"></div>
+                                <div class="absolute bottom-4 left-4 right-4">
+                                    <span class="px-2.5 py-1 rounded-md bg-lumina-amber text-zinc-950 text-[11px] font-extrabold uppercase tracking-wider mb-2 inline-block">Favorit Pelanggan</span>
+                                    <h3 class="font-serif text-xl font-bold text-white">Es Kopi Susu Gula Aren</h3>
+                                    <p class="text-xs text-zinc-300 mt-1">Espresso kental, susu segar, dan gula aren organik pilihan.</p>
+                                </div>
+                            </div>
+
+                            <!-- Quick Stats Badge Row -->
+                            <div class="grid grid-cols-3 gap-3 text-center">
+                                <div class="p-3 rounded-xl bg-zinc-900/80 border border-zinc-800">
+                                    <span class="block font-serif text-lg font-bold text-lumina-gold">100%</span>
+                                    <span class="text-[11px] text-zinc-400">Bahan Segar</span>
+                                </div>
+                                <div class="p-3 rounded-xl bg-zinc-900/80 border border-zinc-800">
+                                    <span class="block font-serif text-lg font-bold text-lumina-gold">4.9 ★</span>
+                                    <span class="text-[11px] text-zinc-400">Rating Rasa</span>
+                                </div>
+                                <div class="p-3 rounded-xl bg-zinc-900/80 border border-zinc-800">
+                                    <span class="block font-serif text-lg font-bold text-lumina-gold">20+</span>
+                                    <span class="text-[11px] text-zinc-400">Varian Menu</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- AI/SMART MOOD & PAIRING RECOMMENDER -->
+    <section id="pairing" class="py-16 bg-zinc-950/60 border-y border-lumina-border/40 relative">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center max-w-2xl mx-auto mb-10">
+                <span class="text-xs uppercase tracking-widest text-lumina-amber font-semibold block mb-2">Smart Menu Assistant</span>
+                <h2 class="font-serif text-3xl sm:text-4xl font-bold text-white">Bingung Mau Pesan Apa?</h2>
+                <p class="text-zinc-400 text-sm mt-2">Pilih mood atau suasana berkunjung Anda, dan biarkan Lumina merekomendasikan pasangan menu sempurna!</p>
+            </div>
+
+            <!-- Mood Buttons -->
+            <div class="flex flex-wrap justify-center gap-3 mb-10">
+                <template x-for="mood in moods" :key="mood.id">
+                    <button @click="selectMood(mood.id)" 
+                            :class="selectedMood === mood.id ? 'bg-lumina-amber text-zinc-950 border-lumina-amber font-bold shadow-glow-amber' : 'bg-lumina-card text-zinc-300 border-lumina-border hover:border-zinc-500'"
+                            class="px-5 py-3 rounded-2xl border text-sm transition-all flex items-center gap-2">
+                        <span x-text="mood.icon"></span>
+                        <span x-text="mood.label"></span>
+                    </button>
+                </template>
+            </div>
+
+            <!-- Recommendation Display Card -->
+            <div x-show="activePairing" x-transition:enter="transition ease-out duration-300 transform opacity-0 scale-95" x-transition:enter-start="opacity-0 scale-95" x-transition:enter-end="opacity-100 scale-100" class="max-w-4xl mx-auto">
+                <div class="glass-panel p-6 sm:p-8 rounded-3xl border border-lumina-amber/30 relative overflow-hidden">
+                    <div class="absolute -right-10 -bottom-10 w-40 h-40 bg-lumina-amber/10 rounded-full blur-2xl"></div>
+                    
+                    <div class="flex items-center gap-2 text-lumina-amber font-medium text-xs uppercase tracking-widest mb-4">
+                        <i data-lucide="sparkles" class="w-4 h-4"></i>
+                        <span>Rekomendasi Kombinasi Ideal</span>
+                    </div>
+
+                    <h3 class="text-xl sm:text-2xl font-serif font-bold text-white mb-2" x-text="activePairing.title"></h3>
+                    <p class="text-sm text-zinc-300 mb-6" x-text="activePairing.description"></p>
+
+                    <!-- Paired Items Grid -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <!-- Food Item -->
+                        <div class="p-4 rounded-2xl bg-zinc-900/90 border border-zinc-800 flex items-center justify-between gap-4">
+                            <div class="flex items-center gap-3">
+                                <div class="w-12 h-12 rounded-xl bg-lumina-amber/10 border border-lumina-amber/20 flex items-center justify-center text-xl">
+                                    🍔
+                                </div>
+                                <div>
+                                    <span class="text-[10px] text-lumina-amber uppercase font-semibold tracking-wider">Makanan</span>
+                                    <h4 class="font-bold text-white text-sm" x-text="activePairing.food.name"></h4>
+                                    <p class="text-xs text-zinc-400" x-text="formatRupiah(activePairing.food.price)"></p>
+                                </div>
+                            </div>
+                            <button @click="openModalWithItem(activePairing.food)" class="p-2 rounded-lg bg-lumina-amber/20 hover:bg-lumina-amber text-lumina-gold transition-colors">
+                                <i data-lucide="plus" class="w-4 h-4"></i>
+                            </button>
+                        </div>
+
+                        <!-- Drink Item -->
+                        <div class="p-4 rounded-2xl bg-zinc-900/90 border border-zinc-800 flex items-center justify-between gap-4">
+                            <div class="flex items-center gap-3">
+                                <div class="w-12 h-12 rounded-xl bg-lumina-amber/10 border border-lumina-amber/20 flex items-center justify-center text-xl">
+                                    ☕
+                                </div>
+                                <div>
+                                    <span class="text-[10px] text-lumina-amber uppercase font-semibold tracking-wider">Minuman</span>
+                                    <h4 class="font-bold text-white text-sm" x-text="activePairing.drink.name"></h4>
+                                    <p class="text-xs text-zinc-400" x-text="formatRupiah(activePairing.drink.price)"></p>
+                                </div>
+                            </div>
+                            <button @click="openModalWithItem(activePairing.drink)" class="p-2 rounded-lg bg-lumina-amber/20 hover:bg-lumina-amber text-lumina-gold transition-colors">
+                                <i data-lucide="plus" class="w-4 h-4"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Add Both Combo Button -->
+                    <div class="mt-6 flex justify-end">
+                        <button @click="addPairingToCart(activePairing)" class="px-6 py-2.5 rounded-xl bg-lumina-amber hover:bg-lumina-gold text-zinc-950 font-bold text-xs flex items-center gap-2 transition-all shadow-glow-amber">
+                            <i data-lucide="shopping-bag" class="w-4 h-4"></i>
+                            <span>Tambah Paket Kombinasi ke Pesanan</span>
+                        </button>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- MAIN INTERACTIVE MENU SECTION -->
+    <section id="menu" class="py-20 relative">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            
+            <!-- Section Header -->
+            <div class="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10">
+                <div>
+                    <span class="text-xs uppercase tracking-widest text-lumina-amber font-semibold block mb-1">Cita Rasa Otentik</span>
+                    <h2 class="font-serif text-3xl sm:text-5xl font-bold text-white">Daftar Menu Lumina</h2>
+                </div>
+
+                <!-- Search Input Bar -->
+                <div class="relative w-full md:w-80">
+                    <i data-lucide="search" class="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-zinc-400"></i>
+                    <input type="text" 
+                           x-model="searchQuery" 
+                           placeholder="Cari hidangan atau minuman..." 
+                           class="w-full pl-10 pr-4 py-2.5 rounded-2xl bg-lumina-card border border-lumina-border text-sm text-white placeholder-zinc-500 focus:outline-none focus:border-lumina-amber transition-colors">
+                    <button x-show="searchQuery" @click="searchQuery = ''" class="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-white">
+                        <i data-lucide="x" class="w-4 h-4"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Category Filter Tabs -->
+            <div class="flex items-center gap-2 overflow-x-auto pb-4 mb-8 no-scrollbar">
+                <template x-for="cat in categories" :key="cat.id">
+                    <button @click="activeCategory = cat.id" 
+                            :class="activeCategory === cat.id ? 'bg-lumina-amber text-zinc-950 font-bold shadow-glow-amber' : 'bg-lumina-card text-zinc-400 hover:text-white border border-lumina-border'"
+                            class="px-5 py-2.5 rounded-2xl text-xs whitespace-nowrap transition-all flex items-center gap-2">
+                        <span x-text="cat.name"></span>
+                        <span class="text-[10px] px-1.5 py-0.5 rounded-full bg-zinc-900/50" x-text="getCategoryCount(cat.id)"></span>
+                    </button>
+                </template>
+            </div>
+
+            <!-- Menu Cards Grid -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                <template x-for="item in filteredMenu" :key="item.id">
+                    <div class="group bg-lumina-card rounded-2xl border border-lumina-border p-5 flex flex-col justify-between transition-all duration-300 card-glow">
+                        <div>
+                            <!-- Badge & Category -->
+                            <div class="flex items-center justify-between mb-3">
+                                <span class="text-[11px] font-semibold px-2.5 py-1 rounded-md bg-zinc-900 text-lumina-amber border border-zinc-800" x-text="getCategoryLabel(item.category)"></span>
+                                <span x-show="item.popular" class="text-[10px] font-bold px-2 py-0.5 rounded bg-amber-500/10 text-amber-400 border border-amber-500/20">POPULER</span>
+                            </div>
+
+                            <!-- Menu Name & Description -->
+                            <h3 class="font-serif text-lg font-bold text-white group-hover:text-lumina-gold transition-colors" x-text="item.name"></h3>
+                            <p class="text-xs text-zinc-400 mt-2 line-clamp-2 leading-relaxed" x-text="item.description"></p>
+                        </div>
+
+                        <!-- Price & Action Button -->
+                        <div class="mt-6 pt-4 border-t border-zinc-800/80 flex items-center justify-between">
+                            <div>
+                                <span class="text-[10px] text-zinc-500 block uppercase tracking-wider">Harga</span>
+                                <span class="text-base font-bold text-lumina-cream" x-text="formatRupiah(item.price)"></span>
+                            </div>
+
+                            <button @click="openModalWithItem(item)" 
+                                    class="px-4 py-2 rounded-xl bg-zinc-900 hover:bg-lumina-amber text-zinc-200 hover:text-zinc-950 text-xs font-semibold border border-zinc-700 hover:border-lumina-amber transition-all flex items-center gap-1.5 shadow-sm">
+                                <i data-lucide="plus" class="w-3.5 h-3.5"></i>
+                                <span>Pesan</span>
+                            </button>
+                        </div>
+                    </div>
+                </template>
+            </div>
+
+            <!-- Empty Search State -->
+            <div x-show="filteredMenu.length === 0" class="text-center py-16 bg-lumina-card/40 rounded-3xl border border-dashed border-zinc-800">
+                <i data-lucide="search-x" class="w-12 h-12 text-zinc-600 mx-auto mb-3"></i>
+                <h3 class="text-lg font-semibold text-white">Menu tidak ditemukan</h3>
+                <p class="text-xs text-zinc-400 mt-1">Coba kata kunci pencarian lain atau pilih kategori berbeda.</p>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- ITEM CUSTOMIZATION MODAL -->
+    <div x-show="selectedItem" 
+         x-transition:enter="transition ease-out duration-200"
+         x-transition:enter-start="opacity-0"
+         x-transition:enter-end="opacity-100"
+         x-transition:leave="transition ease-in duration-150"
+         x-transition:leave-start="opacity-100"
+         x-transition:leave-end="opacity-0"
+         class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm" 
+         x-cloak>
+        
+        <div @click.away="selectedItem = null" class="w-full max-w-md bg-lumina-card rounded-3xl border border-lumina-border overflow-hidden shadow-2xl space-y-6 p-6">
+            
+            <!-- Header -->
+            <div class="flex items-start justify-between border-b border-zinc-800 pb-4">
+                <div>
+                    <span class="text-[10px] text-lumina-amber font-semibold uppercase tracking-widest" x-text="getCategoryLabel(selectedItem?.category)"></span>
+                    <h3 class="text-xl font-serif font-bold text-white mt-0.5" x-text="selectedItem?.name"></h3>
+                    <p class="text-sm font-semibold text-lumina-gold mt-1" x-text="formatRupiah(selectedItem?.price)"></p>
+                </div>
+                <button @click="selectedItem = null" class="p-1.5 rounded-full bg-zinc-900 text-zinc-400 hover:text-white">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+
+            <!-- Customization Options -->
+            <div class="space-y-4 text-xs">
+                
+                <!-- Drink Sweetness Option -->
+                <template x-if="isDrink(selectedItem?.category)">
+                    <div class="space-y-2">
+                        <label class="block font-semibold text-zinc-300">Tingkat Kemanisan (Sugar Level):</label>
+                        <div class="grid grid-cols-3 gap-2">
+                            <button @click="customOptions.sugar = 'Normal Sugar'" 
+                                    :class="customOptions.sugar === 'Normal Sugar' ? 'bg-lumina-amber text-zinc-950 font-bold' : 'bg-zinc-900 text-zinc-400 border border-zinc-800'" 
+                                    class="py-2 rounded-xl transition-all">Normal Sugar</button>
+                            <button @click="customOptions.sugar = 'Less Sugar'" 
+                                    :class="customOptions.sugar === 'Less Sugar' ? 'bg-lumina-amber text-zinc-950 font-bold' : 'bg-zinc-900 text-zinc-400 border border-zinc-800'" 
+                                    class="py-2 rounded-xl transition-all">Less Sugar</button>
+                            <button @click="customOptions.sugar = 'No Sugar'" 
+                                    :class="customOptions.sugar === 'No Sugar' ? 'bg-lumina-amber text-zinc-950 font-bold' : 'bg-zinc-900 text-zinc-400 border border-zinc-800'" 
+                                    class="py-2 rounded-xl transition-all">No Sugar</button>
+                        </div>
+                    </div>
+                </template>
+
+                <!-- Extra Espresso Shot Option for Coffee -->
+                <template x-if="selectedItem?.category === 'kopi'">
+                    <div class="space-y-2 pt-2">
+                        <label class="block font-semibold text-zinc-300">Tambahan (Add-ons):</label>
+                        <label class="flex items-center justify-between p-3 rounded-xl bg-zinc-900 border border-zinc-800 cursor-pointer">
+                            <span class="flex items-center gap-2 text-zinc-300">
+                                <input type="checkbox" x-model="customOptions.extraShot" class="rounded border-zinc-700 text-lumina-amber focus:ring-0">
+                                <span>Ekstra Espresso Shot</span>
+                            </span>
+                            <span class="text-lumina-gold font-semibold">+Rp 5.000</span>
+                        </label>
+                    </div>
+                </template>
+
+                <!-- Temperature Choice for Coffee/Tea -->
+                <template x-if="selectedItem?.name?.includes('(Hot / Iced)')">
+                    <div class="space-y-2 pt-2">
+                        <label class="block font-semibold text-zinc-300">Suhu Minuman:</label>
+                        <div class="grid grid-cols-2 gap-2">
+                            <button @click="customOptions.temp = 'Dingin (Iced)'" 
+                                    :class="customOptions.temp === 'Dingin (Iced)' ? 'bg-lumina-amber text-zinc-950 font-bold' : 'bg-zinc-900 text-zinc-400 border border-zinc-800'" 
+                                    class="py-2 rounded-xl transition-all">Dingin (Iced)</button>
+                            <button @click="customOptions.temp = 'Panas (Hot)'" 
+                                    :class="customOptions.temp === 'Panas (Hot)' ? 'bg-lumina-amber text-zinc-950 font-bold' : 'bg-zinc-900 text-zinc-400 border border-zinc-800'" 
+                                    class="py-2 rounded-xl transition-all">Panas (Hot)</button>
+                        </div>
+                    </div>
+                </template>
+
+                <!-- Spicy Level for Main Courses -->
+                <template x-if="selectedItem?.category === 'makanan_berat'">
+                    <div class="space-y-2">
+                        <label class="block font-semibold text-zinc-300">Tingkat Pedas:</label>
+                        <div class="grid grid-cols-3 gap-2">
+                            <button @click="customOptions.spicy = 'Biasa'" 
+                                    :class="customOptions.spicy === 'Biasa' ? 'bg-lumina-amber text-zinc-950 font-bold' : 'bg-zinc-900 text-zinc-400 border border-zinc-800'" 
+                                    class="py-2 rounded-xl transition-all">Biasa</button>
+                            <button @click="customOptions.spicy = 'Sedang'" 
+                                    :class="customOptions.spicy === 'Sedang' ? 'bg-lumina-amber text-zinc-950 font-bold' : 'bg-zinc-900 text-zinc-400 border border-zinc-800'" 
+                                    class="py-2 rounded-xl transition-all">Sedang 🌶️</button>
+                            <button @click="customOptions.spicy = 'Pedas'" 
+                                    :class="customOptions.spicy === 'Pedas' ? 'bg-lumina-amber text-zinc-950 font-bold' : 'bg-zinc-900 text-zinc-400 border border-zinc-800'" 
+                                    class="py-2 rounded-xl transition-all">Pedas 🔥</button>
+                        </div>
+                    </div>
+                </template>
+
+                <!-- Special Notes Input -->
+                <div class="space-y-1.5 pt-2">
+                    <label class="block font-semibold text-zinc-300">Catatan Khusus (Opsional):</label>
+                    <input type="text" x-model="customOptions.note" placeholder="Contoh: Pisahkan saus, tanpa daun bawang" class="w-full px-3 py-2 rounded-xl bg-zinc-900 border border-zinc-800 text-white placeholder-zinc-500 focus:outline-none focus:border-lumina-amber text-xs">
+                </div>
+
+                <!-- Quantity Counter -->
+                <div class="flex items-center justify-between pt-4 border-t border-zinc-800">
+                    <span class="font-semibold text-zinc-300">Jumlah:</span>
+                    <div class="flex items-center gap-3 bg-zinc-900 p-1 rounded-xl border border-zinc-800">
+                        <button @click="customQuantity = Math.max(1, customQuantity - 1)" class="w-8 h-8 rounded-lg bg-zinc-800 hover:bg-zinc-700 flex items-center justify-center text-white font-bold">-</button>
+                        <span class="w-6 text-center font-bold text-white" x-text="customQuantity"></span>
+                        <button @click="customQuantity++" class="w-8 h-8 rounded-lg bg-zinc-800 hover:bg-zinc-700 flex items-center justify-center text-white font-bold">+</button>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Confirm Add Button -->
+            <button @click="confirmAddToCart()" class="w-full py-3.5 rounded-2xl bg-lumina-amber hover:bg-lumina-gold text-zinc-950 font-bold text-sm transition-all shadow-glow-amber">
+                Tambah ke Pesanan (<span x-text="formatRupiah(calculateModalTotal())"></span>)
+            </button>
+
+        </div>
+    </div>
+
+    <!-- CART DRAWER SIDEBAR -->
+    <div x-show="cartOpen" class="fixed inset-0 z-50 overflow-hidden" x-cloak>
+        <div class="absolute inset-0 bg-black/70 backdrop-blur-sm transition-opacity" @click="cartOpen = false"></div>
+
+        <div class="fixed inset-y-0 right-0 max-w-full flex pl-10">
+            <div class="w-screen max-w-md bg-lumina-card border-l border-lumina-border flex flex-col justify-between shadow-2xl">
+                
+                <!-- Drawer Header -->
+                <div class="p-6 border-b border-zinc-800 flex items-center justify-between">
+                    <div class="flex items-center gap-2">
+                        <i data-lucide="shopping-bag" class="w-5 h-5 text-lumina-amber"></i>
+                        <h3 class="font-serif text-lg font-bold text-white">Pesanan Saya</h3>
+                        <span class="text-xs px-2 py-0.5 rounded-full bg-lumina-amber/20 text-lumina-gold font-semibold" x-text="cartTotalItems + ' item'"></span>
+                    </div>
+                    <button @click="cartOpen = false" class="p-2 rounded-full bg-zinc-900 text-zinc-400 hover:text-white">
+                        <i data-lucide="x" class="w-5 h-5"></i>
+                    </button>
+                </div>
+
+                <!-- Cart Items List -->
+                <div class="p-6 flex-1 overflow-y-auto space-y-4 no-scrollbar">
+                    <template x-if="cart.length === 0">
+                        <div class="text-center py-20 text-zinc-500">
+                            <i data-lucide="shopping-cart" class="w-12 h-12 mx-auto mb-3 opacity-30"></i>
+                            <p class="text-sm font-medium">Keranjang pesanan masih kosong.</p>
+                            <p class="text-xs mt-1">Pilih hidangan lezat favorit Anda dari menu!</p>
+                        </div>
+                    </template>
+
+                    <template x-for="(cartItem, index) in cart" :key="index">
+                        <div class="p-4 rounded-2xl bg-zinc-900/90 border border-zinc-800/80 flex flex-col gap-2">
+                            <div class="flex items-start justify-between gap-2">
+                                <div>
+                                    <h4 class="text-sm font-bold text-white" x-text="cartItem.name"></h4>
+                                    <div class="text-[11px] text-zinc-400 space-y-0.5 mt-0.5">
+                                        <p x-show="cartItem.options.temp" x-text="'Suhu: ' + cartItem.options.temp"></p>
+                                        <p x-show="cartItem.options.sugar" x-text="'Gula: ' + cartItem.options.sugar"></p>
+                                        <p x-show="cartItem.options.extraShot" class="text-lumina-gold">+ Extra Espresso Shot (+Rp 5.000)</p>
+                                        <p x-show="cartItem.options.spicy" x-text="'Pedas: ' + cartItem.options.spicy"></p>
+                                        <p x-show="cartItem.options.note" class="italic text-zinc-500" x-text="'Note: ' + cartItem.options.note"></p>
+                                    </div>
+                                </div>
+                                <span class="text-xs font-bold text-lumina-gold" x-text="formatRupiah(cartItem.totalPrice)"></span>
+                            </div>
+
+                            <div class="flex items-center justify-between pt-2 border-t border-zinc-800/60 mt-1">
+                                <div class="flex items-center gap-2">
+                                    <button @click="updateCartQty(index, -1)" class="w-6 h-6 rounded bg-zinc-800 hover:bg-zinc-700 text-white flex items-center justify-center text-xs font-bold">-</button>
+                                    <span class="text-xs font-bold text-white w-4 text-center" x-text="cartItem.qty"></span>
+                                    <button @click="updateCartQty(index, 1)" class="w-6 h-6 rounded bg-zinc-800 hover:bg-zinc-700 text-white flex items-center justify-center text-xs font-bold">+</button>
+                                </div>
+                                <button @click="removeFromCart(index)" class="text-[11px] text-red-400 hover:text-red-300">Hapus</button>
+                            </div>
+                        </div>
+                    </template>
+                </div>
+
+                <!-- Drawer Footer & Summary -->
+                <div class="p-6 border-t border-zinc-800 bg-zinc-950/80 space-y-3">
+                    <div class="space-y-1.5 text-xs">
+                        <div class="flex justify-between text-zinc-400">
+                            <span>Subtotal</span>
+                            <span class="text-white" x-text="formatRupiah(cartSubtotal)"></span>
+                        </div>
+                        <div class="flex justify-between text-zinc-400">
+                            <span>Pajak & Layanan (10%)</span>
+                            <span class="text-white" x-text="formatRupiah(cartTax)"></span>
+                        </div>
+                        <div class="flex justify-between text-sm font-bold text-white pt-2 border-t border-zinc-800">
+                            <span>Total Ringkasan</span>
+                            <span class="text-lumina-amber" x-text="formatRupiah(cartTotal)"></span>
+                        </div>
+                    </div>
+
+                    <button @click="openCheckoutModal = true; cartOpen = false" 
+                            :disabled="cart.length === 0"
+                            :class="cart.length === 0 ? 'opacity-50 cursor-not-allowed bg-zinc-800 text-zinc-500' : 'bg-lumina-amber hover:bg-lumina-gold text-zinc-950 shadow-glow-amber'"
+                            class="w-full py-3.5 rounded-2xl font-bold text-sm transition-all text-center">
+                        Lanjut ke Pemesanan
+                    </button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- CHECKOUT SIMULATION MODAL -->
+    <div x-show="openCheckoutModal" 
+         x-transition:enter="transition ease-out duration-200"
+         x-transition:enter-start="opacity-0"
+         x-transition:enter-end="opacity-100"
+         class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm" 
+         x-cloak>
+        <div @click.away="openCheckoutModal = false" class="w-full max-w-lg bg-lumina-card rounded-3xl border border-lumina-border p-6 sm:p-8 space-y-6 shadow-2xl">
+            
+            <div class="flex items-center justify-between border-b border-zinc-800 pb-4">
+                <div>
+                    <h3 class="font-serif text-2xl font-bold text-white">Konfirmasi Pemesanan</h3>
+                    <p class="text-xs text-zinc-400 mt-1">LUMINA KAFE - Kasir Digital</p>
+                </div>
+                <button @click="openCheckoutModal = false" class="p-1.5 rounded-full bg-zinc-900 text-zinc-400 hover:text-white">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+
+            <form @submit.prevent="processOrder()" class="space-y-4 text-xs">
+                
+                <!-- Order Type Choice -->
+                <div class="space-y-2">
+                    <label class="block font-semibold text-zinc-300">Tipe Pesanan:</label>
+                    <div class="grid grid-cols-2 gap-3">
+                        <button type="button" @click="orderType = 'Dine-In'" 
+                                :class="orderType === 'Dine-In' ? 'bg-lumina-amber text-zinc-950 font-bold border-lumina-amber' : 'bg-zinc-900 text-zinc-400 border-zinc-800'"
+                                class="py-3 rounded-2xl border text-center transition-all">
+                            🍽️ Makan di Tempat (Dine-In)
+                        </button>
+                        <button type="button" @click="orderType = 'Takeaway'" 
+                                :class="orderType === 'Takeaway' ? 'bg-lumina-amber text-zinc-950 font-bold border-lumina-amber' : 'bg-zinc-900 text-zinc-400 border-zinc-800'"
+                                class="py-3 rounded-2xl border text-center transition-all">
+                            🛍️ Bawa Pulang (Takeaway)
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Customer Details -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div class="space-y-1">
+                        <label class="block font-semibold text-zinc-300">Nama Lengkap:</label>
+                        <input type="text" x-model="checkoutForm.name" required placeholder="Contoh: Budi Santoso" class="w-full px-3 py-2.5 rounded-xl bg-zinc-900 border border-zinc-800 text-white placeholder-zinc-500 focus:outline-none focus:border-lumina-amber">
+                    </div>
+                    <div class="space-y-1" x-show="orderType === 'Dine-In'">
+                        <label class="block font-semibold text-zinc-300">Nomor Meja:</label>
+                        <select x-model="checkoutForm.tableNo" class="w-full px-3 py-2.5 rounded-xl bg-zinc-900 border border-zinc-800 text-white focus:outline-none focus:border-lumina-amber">
+                            <option value="">Pilih Meja</option>
+                            <option value="Meja 01">Meja 01 (Indoor)</option>
+                            <option value="Meja 02">Meja 02 (Indoor)</option>
+                            <option value="Meja 03">Meja 03 (Sofa)</option>
+                            <option value="Meja 04">Meja 04 (Outdoor)</option>
+                            <option value="Meja 05">Meja 05 (Outdoor)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Payment Method -->
+                <div class="space-y-2">
+                    <label class="block font-semibold text-zinc-300">Metode Pembayaran:</label>
+                    <select x-model="checkoutForm.payment" class="w-full px-3 py-2.5 rounded-xl bg-zinc-900 border border-zinc-800 text-white focus:outline-none focus:border-lumina-amber">
+                        <option value="QRIS / E-Wallet">QRIS (Gopay / OVO / Dana / ShopeePay)</option>
+                        <option value="Debit / Credit Card">Kartu Debit / Kredit</option>
+                        <option value="Cash at Counter">Bayar di Kasir (Tunai)</option>
+                    </select>
+                </div>
+
+                <!-- Order Final Summary -->
+                <div class="p-4 rounded-2xl bg-zinc-900 border border-zinc-800 space-y-2 text-xs">
+                    <div class="flex justify-between text-zinc-400">
+                        <span>Total Pesanan + Tax (10%)</span>
+                        <span class="font-bold text-lumina-gold" x-text="formatRupiah(cartTotal)"></span>
+                    </div>
+                </div>
+
+                <button type="submit" class="w-full py-3.5 rounded-2xl bg-lumina-amber hover:bg-lumina-gold text-zinc-950 font-bold text-sm transition-all shadow-glow-amber">
+                    Kirim Pesanan Sekarang
+                </button>
+            </form>
+
+        </div>
+    </div>
+
+    <!-- TABLE RESERVATION MODAL -->
+    <div x-show="openReservationModal" 
+         x-transition:enter="transition ease-out duration-200"
+         x-transition:enter-start="opacity-0"
+         x-transition:enter-end="opacity-100"
+         class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm" 
+         x-cloak>
+        <div @click.away="openReservationModal = false" class="w-full max-w-lg bg-lumina-card rounded-3xl border border-lumina-border p-6 sm:p-8 space-y-6 shadow-2xl">
+            
+            <div class="flex items-center justify-between border-b border-zinc-800 pb-4">
+                <div>
+                    <h3 class="font-serif text-2xl font-bold text-white">Reservasi Meja Lumina</h3>
+                    <p class="text-xs text-zinc-400 mt-1">Sediakan tempat terbaik untuk momen spesial Anda.</p>
+                </div>
+                <button @click="openReservationModal = false" class="p-1.5 rounded-full bg-zinc-900 text-zinc-400 hover:text-white">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+
+            <form @submit.prevent="submitReservation()" class="space-y-4 text-xs">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div class="space-y-1">
+                        <label class="block font-semibold text-zinc-300">Nama Pemesan:</label>
+                        <input type="text" x-model="reservationForm.name" required placeholder="Nama Anda" class="w-full px-3 py-2.5 rounded-xl bg-zinc-900 border border-zinc-800 text-white placeholder-zinc-500 focus:outline-none focus:border-lumina-amber">
+                    </div>
+                    <div class="space-y-1">
+                        <label class="block font-semibold text-zinc-300">Nomor WhatsApp:</label>
+                        <input type="tel" x-model="reservationForm.phone" required placeholder="0812xxxxxxx" class="w-full px-3 py-2.5 rounded-xl bg-zinc-900 border border-zinc-800 text-white placeholder-zinc-500 focus:outline-none focus:border-lumina-amber">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-3 gap-3">
+                    <div class="space-y-1">
+                        <label class="block font-semibold text-zinc-300">Tanggal:</label>
+                        <input type="date" x-model="reservationForm.date" required class="w-full px-3 py-2.5 rounded-xl bg-zinc-900 border border-zinc-800 text-white focus:outline-none focus:border-lumina-amber">
+                    </div>
+                    <div class="space-y-1">
+                        <label class="block font-semibold text-zinc-300">Jam:</label>
+                        <input type="time" x-model="reservationForm.time" required class="w-full px-3 py-2.5 rounded-xl bg-zinc-900 border border-zinc-800 text-white focus:outline-none focus:border-lumina-amber">
+                    </div>
+                    <div class="space-y-1">
+                        <label class="block font-semibold text-zinc-300">Jumlah Tamu:</label>
+                        <select x-model="reservationForm.guests" class="w-full px-3 py-2.5 rounded-xl bg-zinc-900 border border-zinc-800 text-white focus:outline-none focus:border-lumina-amber">
+                            <option value="1-2 Orang">1-2 Orang</option>
+                            <option value="3-4 Orang">3-4 Orang</option>
+                            <option value="5-8 Orang">5-8 Orang</option>
+                            <option value="8+ Orang">8+ Orang</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="space-y-1">
+                    <label class="block font-semibold text-zinc-300">Permintaan Khusus (Opsional):</label>
+                    <textarea x-model="reservationForm.notes" rows="2" placeholder="Contoh: Area bebas asap rokok, dekat jendela, or perayaan ulang tahun..." class="w-full px-3 py-2.5 rounded-xl bg-zinc-900 border border-zinc-800 text-white placeholder-zinc-500 focus:outline-none focus:border-lumina-amber"></textarea>
+                </div>
+
+                <button type="submit" class="w-full py-3.5 rounded-2xl bg-lumina-amber hover:bg-lumina-gold text-zinc-950 font-bold text-sm transition-all shadow-glow-amber">
+                    Konfirmasi Reservasi
+                </button>
+            </form>
+
+        </div>
+    </div>
+
+    <!-- TOAST NOTIFICATION -->
+    <div x-show="toast.show" 
+         x-transition:enter="transition ease-out duration-300 transform"
+         x-transition:enter-start="translate-y-8 opacity-0"
+         x-transition:enter-end="translate-y-0 opacity-100"
+         x-transition:leave="transition ease-in duration-200 transform"
+         x-transition:leave-start="translate-y-0 opacity-100"
+         x-transition:leave-end="translate-y-8 opacity-0"
+         class="fixed bottom-6 right-6 z-50 px-5 py-3.5 rounded-2xl bg-lumina-amber text-zinc-950 font-bold text-xs shadow-2xl flex items-center gap-3 border border-lumina-gold" 
+         x-cloak>
+        <i data-lucide="check-circle-2" class="w-5 h-5"></i>
+        <span x-text="toast.message"></span>
+    </div>
+
+    <!-- FOOTER & CAFE INFO -->
+    <footer id="about" class="mt-auto bg-zinc-950 border-t border-lumina-border/60 pt-16 pb-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-12 gap-10 pb-12 border-b border-zinc-800">
+                
+                <!-- Brand Info -->
+                <div class="md:col-span-5 space-y-4">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-full bg-gradient-to-tr from-lumina-glow to-lumina-gold flex items-center justify-center text-black font-bold">
+                            <i data-lucide="coffee" class="w-5 h-5 text-zinc-950"></i>
+                        </div>
+                        <span class="font-serif text-2xl font-bold tracking-wider text-white">LUMINA KAFE</span>
+                    </div>
+                    <p class="text-xs text-zinc-400 leading-relaxed max-w-sm">
+                        Artisan Coffee & Culinary Comfort. Tempat terbaik menikmati seduhan kopi berkualitas, makanan hangat bercita rasa otentik, dan suasana nyaman hangat untuk bersantai maupun produktif.
+                    </p>
+                    <p class="text-[11px] text-amber-400/90 italic bg-zinc-900/80 p-3 rounded-xl border border-zinc-800">
+                        * Informasi Menu: Semua harga tertera belum termasuk pajak & layanan 10%. Pilihan tingkat kemanisan (less sugar) dan ekstra espresso shot (+Rp 5.000) tersedia berdasarkan permintaan.
+                    </p>
+                </div>
+
+                <!-- Hours & Location -->
+                <div class="md:col-span-4 space-y-3">
+                    <h4 class="text-sm font-bold text-white uppercase tracking-wider">Jam Operasional & Lokasi</h4>
+                    <ul class="text-xs text-zinc-400 space-y-2">
+                        <li class="flex items-center gap-2">
+                            <i data-lucide="clock" class="w-4 h-4 text-lumina-amber"></i>
+                            <span>Senin - Minggu: 10:00 - 22:00 WIB</span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <i data-lucide="map-pin" class="w-4 h-4 text-lumina-amber shrink-0 mt-0.5"></i>
+                            <span>Jl. Senopati No. 88, Kebayoran Baru, Jakarta Selatan</span>
+                        </li>
+                        <li class="flex items-center gap-2">
+                            <i data-lucide="phone" class="w-4 h-4 text-lumina-amber"></i>
+                            <span>+62 812-3456-7890 (Reservasi)</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Social & Features -->
+                <div class="md:col-span-3 space-y-3">
+                    <h4 class="text-sm font-bold text-white uppercase tracking-wider">Fasilitas Kafe</h4>
+                    <div class="flex flex-wrap gap-2 text-[11px] text-zinc-300">
+                        <span class="px-3 py-1 rounded-full bg-zinc-900 border border-zinc-800">Free High-Speed Wi-Fi</span>
+                        <span class="px-3 py-1 rounded-full bg-zinc-900 border border-zinc-800">Stopkontak Banyak</span>
+                        <span class="px-3 py-1 rounded-full bg-zinc-900 border border-zinc-800">Indoor AC</span>
+                        <span class="px-3 py-1 rounded-full bg-zinc-900 border border-zinc-800">Outdoor Smoking Area</span>
+                        <span class="px-3 py-1 rounded-full bg-zinc-900 border border-zinc-800">Musholla</span>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Bottom Copyright -->
+            <div class="pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-zinc-500">
+                <p>&copy; 2026 Lumina Kafe. Seluruh Hak Cipta Dilindungi.</p>
+                <div class="flex items-center gap-4">
+                    <a href="#" class="hover:text-lumina-amber transition-colors">Instagram</a>
+                    <a href="#" class="hover:text-lumina-amber transition-colors">TikTok</a>
+                    <a href="#" class="hover:text-lumina-amber transition-colors">WhatsApp</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- ALPINE APP LOGIC & MENU DATA -->
+    <script>
+        function luminaApp() {
+            return {
+                // UI States
+                activeCategory: 'all',
+                searchQuery: '',
+                selectedItem: null,
+                cartOpen: false,
+                openCheckoutModal: false,
+                openReservationModal: false,
+                selectedMood: 'work',
+                
+                // Customization Modal State
+                customQuantity: 1,
+                customOptions: {
+                    sugar: 'Normal Sugar',
+                    extraShot: false,
+                    temp: 'Dingin (Iced)',
+                    spicy: 'Biasa',
+                    note: ''
+                },
+
+                // Cart State
+                cart: [],
+
+                // Checkout & Reservation Forms
+                orderType: 'Dine-In',
+                checkoutForm: {
+                    name: '',
+                    tableNo: '',
+                    payment: 'QRIS / E-Wallet'
+                },
+                reservationForm: {
+                    name: '',
+                    phone: '',
+                    date: '',
+                    time: '',
+                    guests: '2 Orang',
+                    notes: ''
+                },
+
+                // Toast Notification
+                toast: {
+                    show: false,
+                    message: ''
+                },
+
+                // Categories List
+                categories: [
+                    { id: 'all', name: 'Semua Menu' },
+                    { id: 'makanan_berat', name: 'Makanan Berat' },
+                    { id: 'makanan_ringan', name: 'Makanan Ringan & Bites' },
+                    { id: 'kopi', name: 'Kopi & Racikan Susu' },
+                    { id: 'minuman_segar', name: 'Minuman Segar & Mocktail' }
+                ],
+
+                // Complete Menu Items based on document
+                menuItems: [
+                    // Makanan Berat
+                    { id: 1, name: 'Nasi Goreng Rempah Spesial', category: 'makanan_berat', price: 35000, description: 'Nasi goreng beraroma rempah dengan telur ceplok, suwiran ayam gurih, keripik, dan acar segar.', popular: true },
+                    { id: 2, name: 'Spaghetti Carbonara', category: 'makanan_berat', price: 40000, description: 'Pasta olahan creamy dengan potongan smoked beef lezat dan taburan keju parmesan premium.', popular: true },
+                    { id: 3, name: 'Chicken Katsu Curry', category: 'makanan_berat', price: 38000, description: 'Dada ayam renyah disajikan di atas nasi hangat dengan kuah kari khas Jepang yang kental.', popular: false },
+                    { id: 4, name: 'Beef Teriyaki Rice Bowl', category: 'makanan_berat', price: 42000, description: 'Irisan daging sapi lembut ditumis saus teriyaki manis gurih, disajikan dengan nasi wijen.', popular: true },
+                    { id: 5, name: 'Dori Sambal Matah Bowl', category: 'makanan_berat', price: 36000, description: 'Ikan dori goreng tepung renyah dengan siraman sambal matah khas Bali yang segar dan pedas.', popular: false },
+                    { id: 6, name: 'Crispy Chicken Burger', category: 'makanan_berat', price: 35000, description: 'Burger krispi dengan keju leleh, selada segar, mayo spesial, plus porsi kentang goreng.', popular: false },
+
+                    // Makanan Ringan
+                    { id: 7, name: 'French Fries Classic', category: 'makanan_ringan', price: 20000, description: 'Kentang goreng renyah bumbu gurih, disajikan lengkap dengan cocolan saus sambal dan mayo.', popular: false },
+                    { id: 8, name: 'Platter Mix Sharing', category: 'makanan_ringan', price: 32000, description: 'Kombinasi sosis panggang, chicken nugget, dan kentang goreng renyah porsi berdua.', popular: true },
+                    { id: 9, name: 'Roti Bakar Cokelat Keju', category: 'makanan_ringan', price: 22000, description: 'Roti tebal panggang mentega dengan limpahan keju parut segar dan susu kental manis cokelat.', popular: false },
+                    { id: 10, name: 'Tahu Cabe Garam', category: 'makanan_ringan', price: 19000, description: 'Potongan tahu crispy tumis bumbu bawang putih dan irisan cabai rawit pedas gurih.', popular: true },
+                    { id: 11, name: 'Cireng Bumbu Rujak', category: 'makanan_ringan', price: 18000, description: 'Cireng renyah di luar dan kenyal di dalam, disajikan dengan cocolan saus rujak pedas manis.', popular: false },
+                    { id: 12, name: 'Butter Croissant', category: 'makanan_ringan', price: 25000, description: 'Pastry hangat berlapis renyah dengan aroma mentega murni yang kaya rasa.', popular: false },
+
+                    // Kopi & Racikan Susu
+                    { id: 13, name: 'Es Kopi Susu Gula Aren', category: 'kopi', price: 22000, description: 'Espresso kental, susu segar, dan manis alami dari sirup gula aren organik pilihan.', popular: true },
+                    { id: 14, name: 'Americano (Hot / Iced)', category: 'kopi', price: 18000, description: 'Ekstraksi double shot espresso dengan air murni, menghadirkan karakter kopi yang kuat.', popular: false },
+                    { id: 15, name: 'Cafe Latte / Cappuccino', category: 'kopi', price: 25000, description: 'Perpaduan seimbang antara espresso aromatik dan foam susu lembut yang creamy.', popular: false },
+                    { id: 16, name: 'Matcha Green Tea Latte', category: 'kopi', price: 28000, description: 'Teh hijau Jepang murni diolah halus bersama susu segar manis gurih.', popular: true },
+                    { id: 17, name: 'Chocolate Signature', category: 'kopi', price: 26000, description: 'Seduhan cokelat pekat kental dengan rasa manis yang pas, disajikan hangat atau dingin.', popular: false },
+                    { id: 18, name: 'Caramel Macchiato', category: 'kopi', price: 29000, description: 'Espresso, susu segar, dan vanila topped dengan saus karamel manis nan kaya rasa.', popular: true },
+
+                    // Minuman Segar
+                    { id: 19, name: 'Fresh Lemon Ice Tea', category: 'minuman_segar', price: 15000, description: 'Teh hitam dingin pilihan dipadu dengan perasan buah lemon alami yang menyegarkan.', popular: false },
+                    { id: 20, name: 'Lychee Tea Refresh', category: 'minuman_segar', price: 20000, description: 'Teh wangi manis dingin disajikan dengan buah leci utuh di dalamnya.', popular: true },
+                    { id: 21, name: 'Berry Mojito Mocktail', category: 'minuman_segar', price: 26000, description: 'Perpaduan sirup beri, daun mint segar, perasan jeruk nipis, dan air soda yang melepas dahaga.', popular: true },
+                    { id: 22, name: 'Mango Tropical Soda', category: 'minuman_segar', price: 24000, description: 'Olahan bulir mangga manis bersoda dingin memberikan sensasi kesegaran tropis.', popular: false },
+                    { id: 23, name: 'Mineral Water (Bottled)', category: 'minuman_segar', price: 8000, description: 'Air mineral kemasan dingin/biasa 600ml.', popular: false }
+                ],
+
+                // Mood Pairing Options
+                moods: [
+                    { id: 'work', label: 'Fokus Kerja / WFC', icon: '💻' },
+                    { id: 'spicy', label: 'Ingin Pedas & Segar', icon: '🔥' },
+                    { id: 'chill', label: 'Nongkrong Berdua', icon: '✨' },
+                    { id: 'comfort', label: 'Comfort Food', icon: '🥐' }
+                ],
+
+                // Pairings Database
+                pairings: {
+                    work: {
+                        title: 'Paket Fokus & Energi Kreatif',
+                        description: 'Perpaduan kafein espresso yang kuat dengan santapan hangat rice bowl lembut untuk menjaga fokus Anda sepanjang hari.',
+                        food: { id: 4, name: 'Beef Teriyaki Rice Bowl', category: 'makanan_berat', price: 42000, description: 'Irisan daging sapi tumis teriyaki manis gurih.' },
+                        drink: { id: 13, name: 'Es Kopi Susu Gula Aren', category: 'kopi', price: 22000, description: 'Espresso, susu segar & gula aren.' }
+                    },
+                    spicy: {
+                        title: 'Paket Sensasi Pedas Segar',
+                        description: 'Pedas gurih dari tahu cabai garam bertemu kesegaran dingin buah beri dan soda pelepas dahaga.',
+                        food: { id: 10, name: 'Tahu Cabe Garam', category: 'makanan_ringan', price: 19000, description: 'Tahu crispy tumis cabai rawit pedas.' },
+                        drink: { id: 21, name: 'Berry Mojito Mocktail', category: 'minuman_segar', price: 26000, description: 'Sirup beri, mint & soda segar.' }
+                    },
+                    chill: {
+                        title: 'Paket Santai Sharing',
+                        description: 'Camilan variatif porsi bersama ditemani manis gurih khas Matcha Green Tea Latte premium.',
+                        food: { id: 8, name: 'Platter Mix Sharing', category: 'makanan_ringan', price: 32000, description: 'Sosis, nugget, kentang goreng.' },
+                        drink: { id: 16, name: 'Matcha Green Tea Latte', category: 'kopi', price: 28000, description: 'Matcha Jepang murni & susu segar.' }
+                    },
+                    comfort: {
+                        title: 'Paket Sore Hangat & Manis',
+                        description: 'Butter croissant berlapis yang hangat dipadukan dengan caramel macchiato manis nan berkrim.',
+                        food: { id: 12, name: 'Butter Croissant', category: 'makanan_ringan', price: 25000, description: 'Pastry renyah mentega kaya rasa.' },
+                        drink: { id: 18, name: 'Caramel Macchiato', category: 'kopi', price: 29000, description: 'Espresso, vanila & saus karamel.' }
+                    }
+                },
+
+                // Computed Menu Filtering
+                get filteredMenu() {
+                    return this.menuItems.filter(item => {
+                        const matchesCategory = this.activeCategory === 'all' || item.category === this.activeCategory;
+                        const matchesSearch = item.name.toLowerCase().includes(this.searchQuery.toLowerCase()) || 
+                                              item.description.toLowerCase().includes(this.searchQuery.toLowerCase());
+                        return matchesCategory && matchesSearch;
+                    });
+                },
+
+                get activePairing() {
+                    return this.pairings[this.selectedMood];
+                },
+
+                get cartTotalItems() {
+                    return this.cart.reduce((sum, item) => sum + item.qty, 0);
+                },
+
+                get cartSubtotal() {
+                    return this.cart.reduce((sum, item) => sum + item.totalPrice, 0);
+                },
+
+                get cartTax() {
+                    return Math.round(this.cartSubtotal * 0.10);
+                },
+
+                get cartTotal() {
+                    return this.cartSubtotal + this.cartTax;
+                },
+
+                // Initializer
+                initApp() {
+                    setTimeout(() => {
+                        if (window.lucide) {
+                            window.lucide.createIcons();
+                        }
+                    }, 100);
+                },
+
+                // Helper Functions
+                formatRupiah(number) {
+                    if (!number) return 'Rp 0';
+                    return 'Rp ' + number.toLocaleString('id-ID');
+                },
+
+                getCategoryCount(catId) {
+                    if (catId === 'all') return this.menuItems.length;
+                    return this.menuItems.filter(i => i.category === catId).length;
+                },
+
+                getCategoryLabel(catId) {
+                    const found = this.categories.find(c => c.id === catId);
+                    return found ? found.name : catId;
+                },
+
+                isDrink(category) {
+                    return category === 'kopi' || category === 'minuman_segar';
+                },
+
+                selectMood(moodId) {
+                    this.selectedMood = moodId;
+                    this.$nextTick(() => {
+                        if (window.lucide) window.lucide.createIcons();
+                    });
+                },
+
+                // Modal Actions
+                openModalWithItem(item) {
+                    this.selectedItem = item;
+                    this.customQuantity = 1;
+                    this.customOptions = {
+                        sugar: 'Normal Sugar',
+                        extraShot: false,
+                        temp: item.name.includes('(Hot / Iced)') ? 'Dingin (Iced)' : '',
+                        spicy: 'Biasa',
+                        note: ''
+                    };
+                    this.$nextTick(() => {
+                        if (window.lucide) window.lucide.createIcons();
+                    });
+                },
+
+                calculateModalTotal() {
+                    if (!this.selectedItem) return 0;
+                    let base = this.selectedItem.price;
+                    if (this.customOptions.extraShot) {
+                        base += 5000;
+                    }
+                    return base * this.customQuantity;
+                },
+
+                confirmAddToCart() {
+                    if (!this.selectedItem) return;
+
+                    const itemTotal = this.calculateModalTotal();
+                    
+                    this.cart.push({
+                        id: this.selectedItem.id,
+                        name: this.selectedItem.name,
+                        unitPrice: this.selectedItem.price,
+                        totalPrice: itemTotal,
+                        qty: this.customQuantity,
+                        options: { ...this.customOptions }
+                    });
+
+                    this.showToast(`${this.selectedItem.name} ditambahkan ke pesanan!`);
+                    this.selectedItem = null;
+                },
+
+                addPairingToCart(pairing) {
+                    // Add Food
+                    this.cart.push({
+                        id: pairing.food.id,
+                        name: pairing.food.name,
+                        unitPrice: pairing.food.price,
+                        totalPrice: pairing.food.price,
+                        qty: 1,
+                        options: { sugar: '', extraShot: false, spicy: 'Biasa', note: 'Paket Kombinasi' }
+                    });
+
+                    // Add Drink
+                    this.cart.push({
+                        id: pairing.drink.id,
+                        name: pairing.drink.name,
+                        unitPrice: pairing.drink.price,
+                        totalPrice: pairing.drink.price,
+                        qty: 1,
+                        options: { sugar: 'Normal Sugar', extraShot: false, spicy: '', note: 'Paket Kombinasi' }
+                    });
+
+                    this.showToast('Paket Kombinasi berhasil ditambahkan!');
+                    this.cartOpen = true;
+                },
+
+                updateCartQty(index, delta) {
+                    const item = this.cart[index];
+                    const singleUnitPrice = item.totalPrice / item.qty;
+                    item.qty += delta;
+
+                    if (item.qty <= 0) {
+                        this.removeFromCart(index);
+                    } else {
+                        item.totalPrice = singleUnitPrice * item.qty;
+                    }
+                },
+
+                removeFromCart(index) {
+                    this.cart.splice(index, 1);
+                    this.showToast('Item berhasil dihapus.');
+                },
+
+                processOrder() {
+                    if (this.cart.length === 0) return;
+                    this.openCheckoutModal = false;
+                    this.cart = [];
+                    this.showToast('Pesanan berhasil dikirim ke dapur! Silahkan tunggu.');
+                },
+
+                submitReservation() {
+                    this.openReservationModal = false;
+                    this.showToast(`Reservasi atas nama ${this.reservationForm.name} berhasil dibuat!`);
+                    this.reservationForm = { name: '', phone: '', date: '', time: '', guests: '2 Orang', notes: '' };
+                },
+
+                showToast(msg) {
+                    this.toast.message = msg;
+                    this.toast.show = true;
+                    setTimeout(() => {
+                        this.toast.show = false;
+                    }, 3000);
+                }
+            }
+        }
+    </script>
+</body>
+</html>
